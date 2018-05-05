@@ -1,7 +1,4 @@
-import (
-	"fmt"
-	"strconv"
-)
+import "math"
 
 /*
  * [7] Reverse Integer
@@ -45,21 +42,25 @@ import (
  *
  */
 func reverse(x int) int {
+	var ret int
 	adjust := 1
 	if x < 0 {
 		x = -1 * x
 		adjust = -1
 	}
-	y := strconv.Itoa(x)
-	bytes := []byte(y)
-	for i, j := 0, len(y)-1; i < j; i, j = i+1, j-1 {
-		bytes[i], bytes[j] = bytes[j], bytes[i]
+	var nums []int
+	for {
+		g := x % 10
+		nums = append(nums, g)
+		x = (x - g) / 10
+		if x == 0 {
+			break
+		}
 	}
-	y = string(bytes)
-	ret, err := strconv.Atoi(y)
-	if err != nil {
-		fmt.Println(err.Error())
+	for i := len(nums) - 1; i >= 0; i-- {
+		ret += nums[i] * int(math.Pow10(len(nums)-i-1))
 	}
+
 	if adjust > 0 && ret > 2147483647 {
 		return 0
 	}
