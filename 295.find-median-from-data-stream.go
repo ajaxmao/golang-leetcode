@@ -38,64 +38,74 @@
  * Credits:Special thanks to @Louis1992 for adding this problem and creating
  * all test cases.
  */
-import "fmt"
+import (
+	"container/heap"
+)
 
 type MedianFinder struct {
-	Nums []int
+	RightHeap intHeap
+	LeftHeap  intHeap
+	Total     int
 }
 
 /** initialize your data structure here. */
 func Constructor() MedianFinder {
-	return MedianFinder{}
+	rHeap, lHeap := new(intHeap), new(intHeap)
+	heap.Init(rHeap)
+	heap.Init(lHeap)
+	return MedianFinder{
+		RightHeap: *rHeap,
+		LeftHeap:  *lHeap,
+	}
 }
 
 func (this *MedianFinder) AddNum(num int) {
-	fmt.Println("add num", num)
-	l := len(this.Nums)
-	if l == 0 {
-		this.Nums = []int{num}
-		return
+	this.Total++
+	if this.Total%2 == 0 {
+		heap.Push(&this.LeftHeap, -1*num)
+	} else {
+		heap.Push(&this.RightHeap, num)
 	}
-
-	hi := l - 1
-	var lo, mid int
-
-	for lo <= hi {
-		//小技巧：在这里不用 mid = (low + high)/2， 而是用 mid=low+((high-low)/2)，原因是 使用(low+high)/2会有整数溢出的问题。问题会出现在当low+high的结果大于表达式结果类型所能表示的最大值时，这样，产生溢出后再/2不会产生正确结果
-		mid = lo + (hi-lo)/2
-		midV := this.Nums[mid]
-		if num == midV {
-			break
-		} else if num < midV {
-			hi = mid - 1
-		} else {
-			lo = mid + 1
-		}
+	if this.Total > 1 && this.RightHeap[0] < (-1*this.LeftHeap[0]) {
+		this.RightHeap[0], this.LeftHeap[0] = -1*this.LeftHeap[0], -1*this.RightHeap[0]
+		heap.Fix(&this.RightHeap, 0)
+		heap.Fix(&this.LeftHeap, 0)
 	}
-	if this.Nums[mid] <= num {
-		mid++
-	}
-	fmt.Println("index is", mid)
-	if mid == -1 {
-		this.Nums = append([]int{num}, this.Nums...)
-		return
-	}
-	left := append([]int{}, this.Nums[mid:l]...)
-
-	this.Nums = append(append(this.Nums[:mid], num), left...)
 }
 
 func (this *MedianFinder) FindMedian() float64 {
-	fmt.Println("find", this.Nums)
-	ln := len(this.Nums)
-	if ln == 0 {
+	if this.Total == 0 {
 		return 0.0
 	}
-	if ln%2 == 1 {
-		return float64(this.Nums[ln/2])
+	if this.Total%2 == 0 {
+		return float64(this.RightHeap[0]-this.LeftHeap[0]) / 2.0
 	} else {
-		return float64(this.Nums[ln/2]+this.Nums[ln/2-1]) / 2.0
+		return float64(this.RightHeap[0])
 	}
+}
+
+// intHeap 实现了 heap 的接口
+type intHeap []int
+
+func (h intHeap) Len() int {
+	return len(h)
+}
+
+func (h intHeap) Less(i, j int) bool {
+	return h[i] < h[j]
+}
+
+func (h intHeap) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+}
+func (h *intHeap) Push(x interface{}) {
+	*h = append(*h, x.(int))
+}
+
+func (h *intHeap) Pop() interface{} {
+	res := (*h)[len(*h)-1]
+	*h = (*h)[0 : len(*h)-1]
+	return res
 }
 
 /**
