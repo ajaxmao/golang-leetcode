@@ -26,6 +26,39 @@
  *     Next *ListNode
  * }
  */
+// for ...
+/*func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {*/
+//if l1 == nil {
+//return l2
+//}
+//if l2 == nil {
+//return l1
+//}
+
+//L := []*ListNode{}
+//for l1 != nil && l2 != nil {
+//if l1.Val < l2.Val {
+//L = append(L, l1)
+//l1 = l1.Next
+//} else {
+//L = append(L, l2)
+//l2 = l2.Next
+//}
+//}
+//for i := 0; i < len(L)-1; i++ {
+//L[i].Next = L[i+1]
+//}
+//if l1 == nil {
+//L[len(L)-1].Next = l2
+//}
+//if l2 == nil {
+//L[len(L)-1].Next = l1
+//}
+
+//return L[0]
+/*}*/
+
+// recursion ...
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 	if l1 == nil {
 		return l2
@@ -34,25 +67,13 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 		return l1
 	}
 
-	L := []*ListNode{}
-	for l1 != nil && l2 != nil {
-		if l1.Val < l2.Val {
-			L = append(L, l1)
-			l1 = l1.Next
-		} else {
-			L = append(L, l2)
-			l2 = l2.Next
-		}
+	var head *ListNode
+	if l1.Val < l2.Val {
+		head = l1
+		head.Next = mergeTwoLists(l1.Next, l2)
+	} else {
+		head = l2
+		head.Next = mergeTwoLists(l2.Next, l1)
 	}
-	for i := 0; i < len(L)-1; i++ {
-		L[i].Next = L[i+1]
-	}
-	if l1 == nil {
-		L[len(L)-1].Next = l2
-	}
-	if l2 == nil {
-		L[len(L)-1].Next = l1
-	}
-
-	return L[0]
+	return head
 }
