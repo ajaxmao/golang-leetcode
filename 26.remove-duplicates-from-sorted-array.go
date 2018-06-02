@@ -58,7 +58,8 @@
  *
  */
 
-func removeDuplicates(nums []int) int {
+// fist consider
+/*func removeDuplicates(nums []int) int {
 	ret := len(nums)
 	for i := 0; i < ret-1; i++ {
 		if nums[i] == nums[i+1] {
@@ -68,11 +69,26 @@ func removeDuplicates(nums []int) int {
 			}
 			i--
 		}
-
-		//fmt.Println("i is ", i, nums)
 	}
 	return ret
 }
+*/
+
+//refs others
+func removeDuplicates(nums []int) int {
+	if len(nums) < 2 {
+		return len(nums)
+	}
+	tail, pre := 1, nums[0]
+	for i := 1; i < len(nums); i++ {
+		if nums[i] != pre {
+			tail, pre, nums[tail] = tail+1, nums[i], nums[i]
+		}
+	}
+	return tail
+
+}
+
 
 
 
